@@ -1,20 +1,59 @@
-#include "_0header.h"
 
-void _drill_process(int status)
+bool drive_drill(pin_motor geardrill,pin_motor gearcrane)
+{
+        
+        Serial.println("drill crane down");
+        unsigned long t = millis();
+        drive_something(geardrill,250);
+        drive_something(gearcrane,-50);
+        
+        while(chk_switch(L_switch)==HIGH) { delay(50); } //HIGH is not yet pressed
+        drive_something(geardrill,0);
+        drive_something(gearcrane,0);
+        Serial.println("down_drill complete!!");
+
+        Serial.println("drill crane up");
+        drive_something(geardrill,250);
+        drive_something(gearcrane,200);
+        
+        delay(1000);
+        drive_something(geardrill,0);
+        drive_something(gearcrane,0);
+        
+        Serial.println("Up_drill complete!!");
+        //send to esp32 is complete drilling
+        
+}
+bool _drill_process(int status,pin_motor geardrill,pin_motor gearcrane,pin_motor L_wheel,pin_motor R_wheel)
 {
     switch (status)
     {
         case wait_for_drill:
-            set_zero_motor();
+            Serial.println("wait_for_drill");
+            drive_something(geardrill,0);
+            drive_something(gearcrane,0);
+            drive_something(L_wheel,0);
+            drive_something(R_wheel,0);
             break;
-        case drilling
-            drive_drill(0);
+        case drilling:
+            Serial.println("drilling");
+            drive_something(L_wheel,0);
+            drive_something(R_wheel,0);
+            drive_drill(geardrill,gearcrane);
             break;     
         case read_probe:
-            set_zero_motor();
+            Serial.println("read_probe");
+            drive_something(L_wheel,0);
+            drive_something(R_wheel,0);
+            drive_something(geardrill,0);
+            drive_something(gearcrane,0);
             break;
         case sending_probe:
-            set_zero_motor();
+            Serial.println("Sending probe");
+            drive_something(L_wheel,0);
+            drive_something(R_wheel,0);
+            drive_something(geardrill,0);
+            drive_something(gearcrane,0);
             break;
         default:
             Serial.println("Invalid status");
@@ -24,28 +63,3 @@ void _drill_process(int status)
     return 1;
 }
 
-bool drive_drill(char up)
-{
-        
-        Serial.println("drill crane down");
-        unsigned long t = millis();
-        drive_something(motor[gearDrill],250);
-        drive_something(motor[gearCrane],50);
-        
-        while(chk_switch(L_switch)==HIGH) { delay(50); } //HIGH is not yet pressed
-        drive_something(motor[gearDrill],0);
-        drive_something(motor[gearCrane],0);
-        Serial.println("down_drill complete!!");
-
-        Serial.println("drill crane up");
-        drive_something(motor[gearDrill],250);
-        drive_something(motor[gearCrane],200);
-        
-        delay(1000);
-        drive_something(motor[gearDrill],0);
-        drive_something(motor[gearCrane],0);
-        
-        Serial.println("Up_drill complete!!");
-        //send to esp32 is complete drilling
-        
-}

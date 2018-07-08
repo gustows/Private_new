@@ -1,12 +1,10 @@
-#include "_0header.h"
 
-void _finish_mode(int status)
+bool _finish_mode(int status)
 {
-    }
+    
     switch (status)
     {
-        case idle:
-            set_zero_motor();
+        case idl:
             Serial.println("MISSION COMPLETE!!");
             break;
         default:
